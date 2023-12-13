@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from db.engine_db import get_async_session
 from utils.crud_operations import get_object
-from db.models import BonusPoint
+from db.models import BonusPoint, Buyer
 
 async def on_startup():
     """
@@ -17,3 +17,9 @@ async def on_startup():
             get_async_session.add(obj)
         await get_async_session.commit()
         print("Бонусы добавлены")
+
+
+async def set_data_buyer(session, data):
+    obj = await get_object(session, Buyer, 'number', data.get('number'))
+    # ([('number', '89967377780'), ('films', 'Рао'), ('last_cheque', '4849'), ('bonus_points', 0)])
+    print(data.items())

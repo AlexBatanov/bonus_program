@@ -50,3 +50,16 @@ def get_keyboard_save_and_cancel():
     )
     builder.adjust(1)
     return builder.as_markup()
+
+def get_keyboard_sale_save_and_cancel():
+    """Инлайн кнопки провести продажу и отменить"""
+
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Провести продажу", callback_data="sale_save"
+    )
+    builder.button(
+        text="Отменить", callback_data="cancel"
+    )
+    builder.adjust(1)
+    return builder.as_markup()

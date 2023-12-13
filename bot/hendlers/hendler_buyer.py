@@ -16,8 +16,9 @@ buyer_router = Router()
 
 @buyer_router.callback_query(F.data == "cancel")
 async def cancel(callback: types.CallbackQuery, state: FSMContext):
+    """Вызываем старт холдер и чистим конечный автомат"""
     await callback.message.answer("Отмена")
-    await state.get_data()
+    # await state.get_data()
     await state.clear()
     await callback.answer()
     await start_buyer(callback.message, state)
@@ -25,6 +26,7 @@ async def cancel(callback: types.CallbackQuery, state: FSMContext):
 
 @buyer_router.callback_query(F.data == "add")
 async def input_name(callback: types.CallbackQuery, state: FSMContext):
+    """Предлагаем ввести имя"""
     await callback.message.answer("Введи имя клиента", reply_markup=get_key_cancel())
     await state.set_state(BuyerForm.name)
     await callback.answer()
@@ -32,6 +34,7 @@ async def input_name(callback: types.CallbackQuery, state: FSMContext):
 
 @buyer_router.message(BuyerForm.name)
 async def process_name(message: Message, state: FSMContext):
+    """Сохраняем имя и предлагаем ввести пленки"""
     await state.update_data(name=message.text)
     await state.set_state(BuyerForm.films)
     await message.answer(
@@ -42,6 +45,7 @@ async def process_name(message: Message, state: FSMContext):
 
 @buyer_router.message(BuyerForm.films)
 async def process_films(message: Message, state: FSMContext):
+    """Сохраняем типы пленок автомат и предлагаем ввести суму чека"""
     await state.update_data(films=message.text)
     await state.set_state(BuyerForm.last_cheque)
     await message.answer(
@@ -52,8 +56,8 @@ async def process_films(message: Message, state: FSMContext):
 
 @buyer_router.message(BuyerForm.last_cheque, F.text.regexp(r"^[0-9]+$"))
 async def process_last_cheque(message: Message, state: FSMContext):
-    """Устанавливаем сумму чека"""
-    await state.update_data(last_cheque=message.text)
+    """Устанавливаем сумму чека и предлагаем сохранить клиента"""
+    await state.update_data(last_cheque=int(message.text))
     await state.set_state(BuyerForm.last_cheque)
     data = await state.get_data()
 

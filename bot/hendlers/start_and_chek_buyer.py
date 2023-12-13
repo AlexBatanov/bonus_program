@@ -34,6 +34,7 @@ async def check_buyer(message: Message, state: FSMContext) -> None:
             f"Дата посещения: {obj.date_aplication}\n"
             f"Доступно бонусов: {obj.bonus_points}\n"
             f"Количество установок: {obj.count_aplications}\n"
+            f"Наклеенные пленки: {obj.films}\n"
             f"Сумма последнего чека: {obj.last_cheque}\n",
             reply_markup=get_keyboard_find_buyer()
         )
