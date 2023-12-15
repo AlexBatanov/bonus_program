@@ -18,7 +18,6 @@ buyer_router = Router()
 async def cancel(callback: types.CallbackQuery, state: FSMContext):
     """Вызываем старт холдер и чистим конечный автомат"""
     await callback.message.answer("Отмена")
-    # await state.get_data()
     await state.clear()
     await callback.answer()
     await start_buyer(callback.message, state)
@@ -45,7 +44,7 @@ async def process_name(message: Message, state: FSMContext):
 
 @buyer_router.message(BuyerForm.films)
 async def process_films(message: Message, state: FSMContext):
-    """Сохраняем типы пленок автомат и предлагаем ввести суму чека"""
+    """Сохраняем типы пленок в автомат и предлагаем ввести суму чека"""
     await state.update_data(films=message.text)
     await state.set_state(BuyerForm.last_cheque)
     await message.answer(
@@ -71,6 +70,7 @@ async def process_last_cheque(message: Message, state: FSMContext):
 
 @buyer_router.message(BuyerForm.last_cheque)
 async def last_cheque_incorrectly(message: Message):
+    """Вывод сообщения если некоректна введена сумма"""
     await message.answer(
         text="Вводим только цифры"
     )
@@ -78,9 +78,11 @@ async def last_cheque_incorrectly(message: Message):
 
 @buyer_router.callback_query(F.data == "add_obj")
 async def save_obj(callback: types.CallbackQuery, state: FSMContext):
+    """
+    Сохраняем покупателя, очищаем состояние
+    и переводим на начало диалога (старт)"""
     await create_object(get_async_session, Buyer, await state.get_data()) 
     await callback.message.answer("Клиент добавлен 👍")
-    await state.get_data()
     await state.clear()
     await callback.answer()
     await start_buyer(callback.message, state)

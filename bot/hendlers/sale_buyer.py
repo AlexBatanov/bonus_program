@@ -1,18 +1,14 @@
-from aiogram import F, Router
+from aiogram import F, Router, types
 from aiogram.types import Message
-from aiogram import Router, types
-from aiogram.types import Message
-from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
-from utils.helpers import set_data_buyer
+from utils.helpers import set_data_buyer_sale
 from hendlers.start_and_chek_buyer import start_buyer
-from keyboards.keyboards import get_key_cancel, get_keyboard_find_buyer, get_keyboard_not_find_duyer, get_keyboard_sale_save_and_cancel, get_keyboard_save_and_cancel
+from keyboards.keyboards import get_key_cancel, get_keyboard_sale_save_and_cancel
 from db.engine_db import get_async_session
 from utils.crud_operations import get_object, update_object
 from db.models import Buyer
 from db.states_group import BuyerForm, BuyerUpdateForm
-from utils.crud_operations import create_object
 
 
 sale_buyer_router = Router()
@@ -54,7 +50,7 @@ async def set_film_pointer(message: Message, state: FSMContext) -> None:
 async def process_last_cheque(message: Message, state: FSMContext):
     """Устанавливаем сумму чека и предлагаем сохранить клиента"""
 
-    await state.update_data(last_cheque=message.text)
+    await state.update_data(last_cheque=int(message.text))
     await state.set_state(BuyerForm.last_cheque)
     await input_count_bonus(message, state)
 
@@ -116,11 +112,10 @@ async def saly_ouput_data(message, state):
 @sale_buyer_router.callback_query(F.data == "sale_save")
 async def save_obj(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    data_buyer = await set_data_buyer(get_async_session, data)
-    # await update_object(get_async_session, Buyer, await state.get_data()) 
-    # await callback.message.answer("Клиент добавлен 👍")
-    # await state.get_data()
-    # await state.clear()
-    # await callback.answer()
-    # await start_buyer(callback.message, state)
+    data_buyer = await set_data_buyer_sale(get_async_session, data)
+    await update_object(get_async_session, Buyer, data_buyer) 
+    await callback.message.answer("Продажа проведена 👍")
+    await state.clear()
+    await callback.answer()
+    await start_buyer(callback.message, state)
 

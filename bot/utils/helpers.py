@@ -1,7 +1,9 @@
+from datetime import datetime
 from sqlalchemy import select
 from db.engine_db import get_async_session
 from utils.crud_operations import get_object
 from db.models import BonusPoint, Buyer
+
 
 async def on_startup():
     """
@@ -19,7 +21,17 @@ async def on_startup():
         print("Бонусы добавлены")
 
 
-async def set_data_buyer(session, data):
+async def set_data_buyer_sale(session, data):
+    """Обновляем словарь для обновления данных о продаже"""
+
     obj = await get_object(session, Buyer, 'number', data.get('number'))
-    # ([('number', '89967377780'), ('films', 'Рао'), ('last_cheque', '4849'), ('bonus_points', 0)])
-    print(data.items())
+    bonus = await get_object(get_async_session, BonusPoint, 'name', 'bonus_pointer')
+    data["cheque"] = obj.cheque + data.get("last_cheque")
+    cur_bonus = data.get("bonus_points")
+    data["bonus_points"] = (
+        (data.get("last_cheque") - data.get("bonus_points")) * bonus.percent // 100
+        ) + obj.bonus_points - data.get("bonus_points")
+    data["last_cheque"] -= cur_bonus
+    data["count_aplications"] = obj.count_aplications + 1
+    data["date_aplication"] = datetime.now()
+    return data
