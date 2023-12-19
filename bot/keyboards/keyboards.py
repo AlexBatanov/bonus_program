@@ -80,3 +80,17 @@ def get_keyboard_warranty_save_and_cancel():
     )
     builder.adjust(1)
     return builder.as_markup()
+
+
+def get_keyboard_admin():
+    """Кнопки админа"""
+
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Добавить продавца", callback_data="add_employee"
+    )
+    builder.button(
+        text="Удалить продавца", callback_data="del_employee"
+    )
+    builder.adjust(1)
+    return builder.as_markup()

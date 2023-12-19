@@ -9,10 +9,10 @@ class Base(DeclarativeBase):
     id: Mapped[int] = mapped_column(primary_key=True)
 
 
-class Employe(Base):
-    "Модель клиента (покупателя)"
+class Employee(Base):
+    "Модель сотрудника"
 
-    __tablename__ = "employes"
+    __tablename__ = "employees"
     
     name: Mapped[str] = mapped_column(String(30))
     telegram_id: Mapped[int] = mapped_column(unique=True)
@@ -41,7 +41,7 @@ class Buyer(Base):
     cheque: Mapped[int] = mapped_column(default=0)
     last_cheque: Mapped[int] = mapped_column(default=0)
     count_aplications: Mapped[int] = mapped_column(default=0)
-    last_employe: Mapped[int] = mapped_column(ForeignKey("employes.telegram_id"))
+    last_employee: Mapped[int] = mapped_column(ForeignKey("employees.telegram_id"))
 
 
 class BonusPoint(Base):
