@@ -2,11 +2,12 @@ from aiogram import F, Router
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
+from aiogram.enums import ParseMode
 
 from keyboards.keyboards import get_keyboard_find_buyer, get_keyboard_not_find_duyer
 from db.engine_db import get_async_session
 from utils.crud_operations import get_object
-from db.models import Buyer
+from db.models import Buyer, Employe
 from db.states_group import BuyerForm
 
 
@@ -16,10 +17,22 @@ start_buyer_router = Router()
 @start_buyer_router.message(CommandStart())
 async def start_buyer(message: Message, state: FSMContext):
     """Начало работы бота"""
-    await state.set_state(BuyerForm.number)
-    await message.answer(
-        "Введи номер клиента в формате: 89271112233",
-    )
+    employe_id = message.from_user.id
+    await state.set_state(BuyerForm.employe)
+    await state.update_data(employe=employe_id)
+    obj = await get_object(get_async_session, Employe, 'telegram_id', employe_id)
+
+    if not obj:
+        await message.answer(
+            "Для работы с ботом отправь администратору\n"
+            f"свой id <code><b>{employe_id}</b></code>",
+            parse_mode=ParseMode.HTML
+        )
+    else:
+        await state.set_state(BuyerForm.number)
+        await message.answer(
+            "Введи номер клиента в формате: 89271112233",
+        )
 
 
 @start_buyer_router.message(BuyerForm.number, F.text.regexp(r"\d{11}"))

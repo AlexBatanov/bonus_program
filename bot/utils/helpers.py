@@ -15,8 +15,8 @@ async def on_startup():
     obj = await get_object(get_async_session, BonusPoint, 'name', 'bonus_pointer')
     if not obj:
         obj = BonusPoint(name='bonus_pointer')
-        async with get_async_session.begin():
-            get_async_session.add(obj)
+        # async with get_async_session.begin():
+        get_async_session.add(obj)
         await get_async_session.commit()
         print("Бонусы добавлены")
 
