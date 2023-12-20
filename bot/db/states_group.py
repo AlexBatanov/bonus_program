@@ -6,7 +6,7 @@ class BuyerForm(StatesGroup):
     name = State()
     films = State()
     last_cheque = State()
-    employee = State()
+    last_employee = State()
 
 class BuyerUpdateForm(StatesGroup):
     number = State()
@@ -14,8 +14,14 @@ class BuyerUpdateForm(StatesGroup):
     films = State()
     last_cheque = State()
     bonus_points = State()
-    employee = State()
+    last_employee = State()
 
 class BuyerWarrantyForm(StatesGroup):
     films = State()
     number = State()
+
+class EmployeeForm(StatesGroup):
+    telegram_id = State()
+    first_name = State()
+    last_name = State()
+    is_admin = State()

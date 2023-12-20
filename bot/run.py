@@ -12,6 +12,7 @@ from hendlers.hendler_buyer import buyer_router
 from hendlers.start_and_chek_buyer import start_buyer_router
 from hendlers.sale_buyer import sale_buyer_router
 from hendlers.warranty_buyer import warranty_router
+from hendlers.admin_hendler import admin_router
 from db.engine_db import async_engine
 from utils.helpers import on_startup
 
@@ -31,6 +32,7 @@ async def main() -> None:
     dp.include_router(buyer_router)
     dp.include_router(sale_buyer_router)
     dp.include_router(warranty_router)
+    dp.include_router(admin_router)
     
     await dp.start_polling(bot)
 

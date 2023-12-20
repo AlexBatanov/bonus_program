@@ -14,12 +14,14 @@ class Employee(Base):
 
     __tablename__ = "employees"
     
-    name: Mapped[str] = mapped_column(String(30))
+    first_name: Mapped[str] = mapped_column(String(30))
+    last_name: Mapped[str] = mapped_column(String(30))
     telegram_id: Mapped[int] = mapped_column(unique=True)
     date_registered: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
     is_admin: Mapped[bool] = mapped_column(default=False)
+    is_banned: Mapped[bool] = mapped_column(default=False)
     buyers: Mapped[List["Buyer"]] = relationship()
 
 

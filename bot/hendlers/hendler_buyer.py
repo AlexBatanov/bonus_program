@@ -20,7 +20,7 @@ async def cancel(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer("Отмена")
     await state.clear()
     await callback.answer()
-    await start_buyer(callback.message, state)
+    # await start_buyer(callback.message, state)
 
 
 @buyer_router.callback_query(F.data == "add")
@@ -85,4 +85,4 @@ async def save_obj(callback: types.CallbackQuery, state: FSMContext):
     await callback.message.answer("Клиент добавлен 👍")
     await state.clear()
     await callback.answer()
-    await start_buyer(callback.message, state)
+    # await start_buyer(callback.message, state)

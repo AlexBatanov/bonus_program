@@ -94,3 +94,16 @@ def get_keyboard_admin():
     )
     builder.adjust(1)
     return builder.as_markup()
+
+
+def get_yes_no():
+    """Инлайн кнопки сделать админом"""
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Дa", callback_data="is_admin_true"
+    )
+    builder.button(
+        text="Нет", callback_data="is_admin_false"
+    )
+    builder.adjust(2)
+    return builder.as_markup()

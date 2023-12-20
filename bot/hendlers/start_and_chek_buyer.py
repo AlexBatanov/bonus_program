@@ -1,8 +1,8 @@
 from aiogram import F, Router
 from aiogram.types import Message
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.fsm.context import FSMContext
-from aiogram.enums import ParseMode
+from aiogram.enums import ParseMode, chat_type
 
 from keyboards.keyboards import (get_keyboard_find_buyer,
                                  get_keyboard_admin,
@@ -16,31 +16,32 @@ from db.states_group import BuyerForm
 start_buyer_router = Router()
 
 
-@start_buyer_router.message(CommandStart())
+@start_buyer_router.message(CommandStart() or F.text.regexp(r"\d{11}"))
 async def start_buyer(message: Message, state: FSMContext):
     """Начало работы бота"""
     employee_id = message.from_user.id
-    await state.set_state(BuyerForm.employee)
-    await state.update_data(employe=employee_id)
+    print(employee_id)
+    await state.set_state(BuyerForm.last_employee)
+    await state.update_data(last_employee=employee_id)
     obj = await get_object(get_async_session, Employee, 'telegram_id', employee_id)
-
+    if True:
     # if obj and obj.is_admin:
-    await state.set_state(BuyerForm.number)
-    await message.answer(
-        "Введи номер клиента в формате: 89271112233",
-        # reply_markup=get_keyboard_admin()
-    )
-    # elif not obj:
-    #     await message.answer(
-    #         "Для работы с ботом отправь администратору\n"
-    #         f"свой id <code><b>{employee_id}</b></code>",
-    #         parse_mode=ParseMode.HTML
-    #     )
-    # else:
-    #     await state.set_state(BuyerForm.number)
-    #     await message.answer(
-    #         "Введи номер клиента в формате: 89271112233",
-    #     )
+        await state.set_state(BuyerForm.number)
+        await message.answer(
+            "Введи номер клиента в формате: 89271112233",
+            reply_markup=get_keyboard_admin()
+        )
+    elif obj and not obj.is_banned:
+        await state.set_state(BuyerForm.number)
+        await message.answer(
+            "Введи номер клиента в формате: 89271112233",
+        )
+    else:
+        await message.answer(
+            "Для работы с ботом отправь администратору\n"
+            f"свой id <code><b>{employee_id}</b></code>",
+            parse_mode=ParseMode.HTML
+        )
 
 
 @start_buyer_router.message(BuyerForm.number, F.text.regexp(r"\d{11}"))
@@ -54,7 +55,6 @@ async def check_buyer(message: Message, state: FSMContext):
 
     obj = await get_object(get_async_session, Buyer, 'number', message.text)
     if obj:
-        print('ok__________________________________________')
         await message.answer(
             f"Имя: {obj.name}\n"
             f"Дата посещения: {obj.date_aplication.strftime('%d.%m.%Y')}\n"
