@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 
 from utils.helpers import set_data_buyer_sale
 from hendlers.start_and_chek_buyer import start_buyer
-from keyboards.keyboards import get_key_cancel, get_keyboard_sale_save_and_cancel
+from keyboards.keyboards import get_key_cancel, get_keyboard_sale_save_and_cancel, repeat
 from db.engine_db import get_async_session
 from utils.crud_operations import get_object, update_object
 from db.models import Buyer
@@ -112,10 +112,10 @@ async def saly_ouput_data(message, state):
 @sale_buyer_router.callback_query(F.data == "sale_save")
 async def save_obj(callback: types.CallbackQuery, state: FSMContext):
     data = await state.get_data()
+    buyer = await get_object(get_async_session, Buyer, "number", data.get("number"))
     data_buyer = await set_data_buyer_sale(get_async_session, data)
-    await update_object(get_async_session, Buyer, data_buyer) 
-    await callback.message.answer("Продажа проведена 👍")
+    await update_object(get_async_session, buyer, data_buyer) 
+    await callback.message.answer("Продажа проведена 👍", reply_markup=repeat())
     await state.clear()
     await callback.answer()
-    await start_buyer(callback.message, state)
 

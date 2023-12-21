@@ -3,7 +3,8 @@ from aiogram.types import Message
 from aiogram import Router, types
 from aiogram.fsm.context import FSMContext
 
-from keyboards.keyboards import get_key_cancel, get_keyboard_save_and_cancel
+from utils.helpers import set_data_buyer_create
+from keyboards.keyboards import get_key_cancel, get_keyboard_save_and_cancel, repeat
 from db.engine_db import get_async_session
 from db.models import Buyer
 from db.states_group import BuyerForm
@@ -14,13 +15,13 @@ from .start_and_chek_buyer import start_buyer
 buyer_router = Router()
 
 
-@buyer_router.callback_query(F.data == "cancel")
-async def cancel(callback: types.CallbackQuery, state: FSMContext):
-    """Вызываем старт холдер и чистим конечный автомат"""
-    await callback.message.answer("Отмена")
-    await state.clear()
-    await callback.answer()
-    # await start_buyer(callback.message, state)
+# @buyer_router.callback_query(F.data == "cancel")
+# async def cancel(callback: types.CallbackQuery, state: FSMContext):
+#     """Вызываем старт холдер и чистим конечный автомат"""
+#     await callback.message.answer("Отмена")
+#     await state.clear()
+#     await start_buyer(callback.message, state)
+#     await callback.answer()
 
 
 @buyer_router.callback_query(F.data == "add")
@@ -80,9 +81,10 @@ async def last_cheque_incorrectly(message: Message):
 async def save_obj(callback: types.CallbackQuery, state: FSMContext):
     """
     Сохраняем покупателя, очищаем состояние
-    и переводим на начало диалога (старт)"""
-    await create_object(get_async_session, Buyer, await state.get_data()) 
-    await callback.message.answer("Клиент добавлен 👍")
+    и предлагам перейти на начало диалога кнопкой (продолжить)"""
+    data = await state.get_data()
+    data = await set_data_buyer_create(get_async_session, data)
+    await create_object(get_async_session, Buyer, data) 
     await state.clear()
     await callback.answer()
-    # await start_buyer(callback.message, state)
+    await callback.message.answer("Клиент добавлен 👍", reply_markup=repeat())

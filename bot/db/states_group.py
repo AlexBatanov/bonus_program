@@ -25,3 +25,6 @@ class EmployeeForm(StatesGroup):
     first_name = State()
     last_name = State()
     is_admin = State()
+
+class EmployeeBanForm(StatesGroup):
+    telegram_id = State()

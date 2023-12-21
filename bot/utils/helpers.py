@@ -35,3 +35,11 @@ async def set_data_buyer_sale(session, data):
     data["count_aplications"] = obj.count_aplications + 1
     data["date_aplication"] = datetime.now()
     return data
+
+
+async def set_data_buyer_create(session, data):
+    bonus = await get_object(session, BonusPoint, "name", "bonus_pointer")
+    data["count_aplications"] = 1
+    data["cheque"] = data.get("last_cheque")
+    data["bonus_points"] = (int(data.get("last_cheque")) * bonus.percent) // 100
+    return data

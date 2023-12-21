@@ -3,10 +3,9 @@ from aiogram import F, Router, types
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from hendlers.start_and_chek_buyer import start_buyer
 from db.models import Buyer
-from utils.crud_operations import update_object
-from keyboards.keyboards import get_key_cancel, get_keyboard_warranty_save_and_cancel
+from utils.crud_operations import get_object, update_object
+from keyboards.keyboards import get_key_cancel, get_keyboard_warranty_save_and_cancel, repeat
 from db.states_group import BuyerWarrantyForm
 from db.engine_db import get_async_session
 
@@ -52,8 +51,8 @@ async def input_name(callback: types.CallbackQuery, state: FSMContext):
     
     data = await state.get_data()
     data["date_aplication"] = datetime.now()
-    await update_object(get_async_session, Buyer, data)
-    await callback.message.answer("Выполнено 👍")
+    obj = await get_object(get_async_session, Buyer, "number", data.get("number"))
+    await update_object(get_async_session, obj, data)
+    await callback.message.answer("Выполнено 👍", reply_markup=repeat())
     await callback.answer()
     await state.clear()
-    await start_buyer(callback.message, state)

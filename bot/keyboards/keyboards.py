@@ -1,4 +1,5 @@
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.utils.keyboard import InlineKeyboardBuilder, KeyboardBuilder
+from aiogram import types
 
 
 def get_keyboard_find_buyer():
@@ -82,7 +83,7 @@ def get_keyboard_warranty_save_and_cancel():
     return builder.as_markup()
 
 
-def get_keyboard_admin():
+def get_keybords_add_del_employee():
     """Кнопки админа"""
 
     builder = InlineKeyboardBuilder()
@@ -90,7 +91,7 @@ def get_keyboard_admin():
         text="Добавить продавца", callback_data="add_employee"
     )
     builder.button(
-        text="Удалить продавца", callback_data="del_employee"
+        text="Заблокировать продавца", callback_data="ban_employee"
     )
     builder.adjust(1)
     return builder.as_markup()
@@ -106,4 +107,41 @@ def get_yes_no():
         text="Нет", callback_data="is_admin_false"
     )
     builder.adjust(2)
+    return builder.as_markup()
+
+
+def repeat():
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Продолжить", callback_data="cancel"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def get_keyboard_save_and_cancel_employee():
+    """Инлайн кнопки отменить и сохранить сотрудника"""
+
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Сохранить", callback_data="save_employee"
+    )
+    builder.button(
+        text="Отменить", callback_data="cancel"
+    )
+    builder.adjust(1)
+    return builder.as_markup()
+
+
+def get_keyboard_banned_employee():
+    """Инлайн кнопки отменить и сохранить сотрудника"""
+
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text="Заблокировать", callback_data="banned_employee"
+    )
+    builder.button(
+        text="Отменить", callback_data="cancel"
+    )
+    builder.adjust(1)
     return builder.as_markup()
